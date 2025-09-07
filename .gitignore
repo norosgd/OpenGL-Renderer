@@ -5,6 +5,8 @@
 .vs/
 bin/
 bin-int/
+debug/
+release/
 x64/
 x86/
 
