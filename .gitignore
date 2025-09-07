@@ -1,11 +1,19 @@
 # Prerequisites
 *.d
 
+# Directories
+.vs/
+bin/
+bin-int/
+x64/
+x86/
+
 # Compiled Object files
 *.slo
 *.lo
 *.o
 *.obj
+*.user
 
 # Precompiled Headers
 *.gch
