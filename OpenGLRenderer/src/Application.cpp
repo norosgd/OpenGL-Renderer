@@ -28,27 +28,45 @@ int main(void)
         return -1;
     }
     glViewport(0, 0, 800, 600);
+    glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 
     float vertices[] = {
-        -0.5f, -0.5f, 0.0f,
-         0.5f, -0.5f, 0.0f,
-         0.0f,  0.5f, 0.0f
+         0.5f,  0.5f, 0.0f,  // 0
+         0.5f, -0.5f, 0.0f,  // 1
+        -0.5f, -0.5f, 0.0f,  // 2
+        -0.5f,  0.5f, 0.0f   // 3
+    };
+
+    unsigned int indices[] = {
+        0, 1, 3,
+        1, 2 , 3
     };
 
     unsigned int VAO;
+    unsigned int VBO;
+    unsigned int EBO;
+
+    //generate and bind vertex array buffer
     glGenVertexArrays(1, &VAO);
     glBindVertexArray(VAO);
 
-    unsigned int VBO;
+    //allocate a vertex buffer object on the gpu memory
+    //bind the buffer and send the data to the gpu
     glGenBuffers(1, &VBO);
     glBindBuffer(GL_ARRAY_BUFFER, VBO);
     glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
 
+    //generate an element buffer object
+    //bind the buffer and send indices data to the gpu
+    glGenBuffers(1, &EBO);
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
+    glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
 
-    glEnableVertexAttribArray(0);
+    //tell opengl the attribs of the vertex buffer object
     glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * (sizeof(float)), (void*)0);
+    glEnableVertexAttribArray(0);
     
-
+    
 
     //Vertex Shader
     const char* vertexShaderSource = "#version 330 core\n"
@@ -105,7 +123,8 @@ int main(void)
 
         glUseProgram(shaderProgram);
         glBindVertexArray(VAO);
-        glDrawArrays(GL_TRIANGLES, 0, 3);
+        glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+        glBindVertexArray(0);
 
         glfwSwapBuffers(window);
         glfwPollEvents();
