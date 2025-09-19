@@ -1,6 +1,7 @@
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
 #include <iostream>
+#include "Shader.h"
 
 int main(void)
 {
@@ -28,7 +29,6 @@ int main(void)
         return -1;
     }
     glViewport(0, 0, 800, 600);
-    glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 
     float vertices[] = {
          0.5f,  0.5f, 0.0f,  // 0
@@ -65,65 +65,28 @@ int main(void)
     //tell opengl the attribs of the vertex buffer object
     glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * (sizeof(float)), (void*)0);
     glEnableVertexAttribArray(0);
-    
-    
 
-    //Vertex Shader
-    const char* vertexShaderSource = "#version 330 core\n"
-        "layout (location = 0) in vec3 aPos;\n"
-        "void main()\n"
-        "{\n"
-        "   gl_Position = vec4(aPos.x, aPos.y, aPos.z, 1.0);\n"
-        "}\0";
-    unsigned int vertexShader;
-    vertexShader = glCreateShader(GL_VERTEX_SHADER);
-    glShaderSource(vertexShader, 1, &vertexShaderSource, NULL);
-    glCompileShader(vertexShader);
-
-    //Shader debug
-    int compileStatus;
-    char infoLog[512];
-    glGetShaderiv(vertexShader, GL_COMPILE_STATUS, &compileStatus);
-
-    if (!compileStatus)
-    {
-        glGetShaderInfoLog(vertexShader, 512, NULL, infoLog);
-        std::cout << "ERROR::SHADER::VERTEX::COMPILATION_FAILED\n" << infoLog << std::endl;
-    }
-
-    // Fragment Shader
-    const char* fragmentShaderSource = "#version 330 core\n"
-        "out vec4 FragColor;\n"
-        "void main()\n"
-        "{\n"
-        "   FragColor = vec4(1.0f, 0.5f, 0.2f, 1.0f);\n"
-        "}\0";
-
-    unsigned int fragmentShader;
-    fragmentShader = glCreateShader(GL_FRAGMENT_SHADER);
-    glShaderSource(fragmentShader, 1, &fragmentShaderSource, NULL);
-    glCompileShader(fragmentShader);
-
-    //Shader Program
-    unsigned int shaderProgram;
-    shaderProgram = glCreateProgram();
-    glAttachShader(shaderProgram, vertexShader);
-    glAttachShader(shaderProgram, fragmentShader);
-    glLinkProgram(shaderProgram);
-    glUseProgram(shaderProgram);
-
-    //delete shader objects
-    glDeleteShader(vertexShader);
-    glDeleteShader(fragmentShader);
+    //Shaders
+    Shader shaderProgram("res/shaders/shader.vs", "res/shaders/shader.fs");
 
     while (!glfwWindowShouldClose(window))
     {
         glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT);
 
-        glUseProgram(shaderProgram);
+        shaderProgram.use();
+
+        //uniforms
+        float timeValue = glfwGetTime();
+        float blueValue = (sin(timeValue) / 2.0f) + 0.5f;
+        int uniformLocation = glGetUniformLocation(shaderProgram.m_Id, "Color");
+        glUniform4f(uniformLocation, 0.0f, 0.0f, blueValue, 1.0f);
+
+        //bind vertex array and draw elements
         glBindVertexArray(VAO);
         glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+
+        //unbind vertex array
         glBindVertexArray(0);
 
         glfwSwapBuffers(window);
