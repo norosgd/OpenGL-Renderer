@@ -67,7 +67,7 @@ int main(void)
     glEnableVertexAttribArray(0);
 
     //Shaders
-    Shader shaderProgram("res/shaders/shader.vs", "res/shaders/shader.fs");
+    Shader shaderProgram("res/shaders/shader.vert", "res/shaders/shader.frag");
 
     while (!glfwWindowShouldClose(window))
     {

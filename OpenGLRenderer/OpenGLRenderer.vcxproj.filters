@@ -26,8 +26,8 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <None Include="res\shaders\shader.vs" />
-    <None Include="res\shaders\shader.fs" />
+    <None Include="res\shaders\shader.vert" />
+    <None Include="res\shaders\shader.frag" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\Shader.h">
