@@ -2,6 +2,7 @@
 #include <GLFW/glfw3.h>
 #include <iostream>
 #include "Shader.h"
+#include"stb_image.h"
 
 int main(void)
 {
@@ -31,10 +32,11 @@ int main(void)
     glViewport(0, 0, 800, 600);
 
     float vertices[] = {
-         0.5f,  0.5f, 0.0f,  // 0
-         0.5f, -0.5f, 0.0f,  // 1
-        -0.5f, -0.5f, 0.0f,  // 2
-        -0.5f,  0.5f, 0.0f   // 3
+        // positions          // colors       
+         0.5f,  0.5f, 0.0f,   1.0f, 0.0f, 0.0f,      // top right
+         0.5f, -0.5f, 0.0f,   0.0f, 1.0f, 0.0f,      // bottom right
+        -0.5f, -0.5f, 0.0f,   0.0f, 0.0f, 1.0f,      // bottom left
+        -0.5f,  0.5f, 0.0f,   1.0f, 1.0f, 0.0f   
     };
 
     unsigned int indices[] = {
@@ -63,8 +65,10 @@ int main(void)
     glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
 
     //tell opengl the attribs of the vertex buffer object
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * (sizeof(float)), (void*)0);
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (const void*)0);
+    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (const void*)(3 * sizeof(float)));
     glEnableVertexAttribArray(0);
+    glEnableVertexAttribArray(1);
 
     //Shaders
     Shader shaderProgram("res/shaders/shader.vert", "res/shaders/shader.frag");
@@ -75,19 +79,12 @@ int main(void)
         glClear(GL_COLOR_BUFFER_BIT);
 
         shaderProgram.use();
-
-        //uniforms
-        float timeValue = glfwGetTime();
-        float blueValue = (sin(timeValue) / 2.0f) + 0.5f;
-        int uniformLocation = glGetUniformLocation(shaderProgram.m_Id, "Color");
-        glUniform4f(uniformLocation, 0.0f, 0.0f, blueValue, 1.0f);
-
         //bind vertex array and draw elements
-        glBindVertexArray(VAO);
+        //glBindVertexArray(VAO);
         glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
 
         //unbind vertex array
-        glBindVertexArray(0);
+        //glBindVertexArray(0);
 
         glfwSwapBuffers(window);
         glfwPollEvents();
