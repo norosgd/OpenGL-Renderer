@@ -4,6 +4,10 @@
 #include "Shader.h"
 #include"stb_image.h"
 
+#include <glm/glm.hpp>
+#include <glm/gtc/matrix_transform.hpp>
+#include <glm/gtc/type_ptr.hpp>
+
 int main(void)
 {
     //initialize glfw and set the opengl verison to 3
@@ -91,6 +95,14 @@ int main(void)
     glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, imageData);
     glGenerateMipmap(GL_TEXTURE_2D);
 
+    //maths
+    glm::mat4 trans = glm::mat4(1.0f);
+    //glm rotate first arg is the matrix second is degrees and third is the axis to rotate on
+    trans = glm::rotate(trans, glm::radians(90.0f), glm::vec3(0.0f, 0.0f, 1.0f));
+    trans = glm::scale(trans, glm::vec3(2.0f, 2.0f, 2.0f));
+
+    
+
     stbi_image_free(imageData);
 
     while (!glfwWindowShouldClose(window))
@@ -99,6 +111,8 @@ int main(void)
         glClear(GL_COLOR_BUFFER_BIT);
 
         shaderProgram.use();
+        unsigned int transformLocation = glGetUniformLocation(shaderProgram.m_Id, "transform");
+        glUniformMatrix4fv(transformLocation, 1, GL_FALSE, glm::value_ptr(trans));
         //bind vertex array and draw elements
         //glBindVertexArray(VAO);
         glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
